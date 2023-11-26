@@ -1091,6 +1091,71 @@ void ds_MH(dsMonHoc& dsMH) {
 		}
 	}
 }
+int read_data(MonHoc*& MH, ifstream& fileinput, string maMon) {
+	if (maMon == "=====================") return 0;
+	if (MH == NULL) {
+		MH = new MonHoc();
+		MH->MaMon = maMon;
+		//cout << "ma mon la: " << MH->MaMon << " ";
+		getline(fileinput, MH->TenMH);
+		//cout << "ten mon la: " << MH->TenMH << " ";
+		fileinput >> MH->STCLT;
+		//cout << "STCLT la: " << MH->STCLT << " ";
+		fileinput >> MH->STCTH;
+		//cout << "STCTH la: " << MH->STCTH << endl;
+		MH->pleft = NULL;
+		MH->pright = NULL;
+		fileinput.ignore();
+		return 1;
+	}
+	else if (MH->MaMon == maMon) {
+		cout << "mon hoc da ton tai";
+		return 0;
+	}
+	else if (maMon > MH->MaMon) {
+		int result = read_data(MH->pright, fileinput, maMon);
+		return result;
+	}	
+	else if (maMon < MH->MaMon) {
+		int result = read_data(MH->pleft, fileinput, maMon);
+		return result;
+	}
+	can_bang(MH);
+	return 0;
+}
+void readfile_dsMH(string str, dsMonHoc& dsMH) {
+	string maMon;
+	ifstream fileinput(str);
+	if (!fileinput.is_open()) {
+		cout << "khong the mo file" << endl;
+		return;
+	}
+	while (getline(fileinput, maMon)) {
+		if (read_data(dsMH.ds, fileinput, maMon)) dsMH.sl++;
+	}
+	fileinput.close();
+	return;
+}
+void write_Data(MonHoc*& MH, ofstream& fileoutput) {
+	if (MH != NULL) {
+		write_Data(MH->pleft, fileoutput);
+		fileoutput << MH->MaMon << endl;
+		fileoutput << MH->TenMH << endl;
+		fileoutput << MH->STCLT << endl;
+		fileoutput << MH->STCTH << endl;
+		fileoutput << "=====================" << endl;
+		write_Data(MH->pright, fileoutput);
+	}
+}
+void writefile_dsMH(string str, dsMonHoc& dsMH) {
+	ofstream fileoutput(str);
+	if (!fileoutput.is_open()) {
+		cout << "khong the mo file de ghi" << endl;
+		return;
+	}
+	write_Data(dsMH.ds, fileoutput);
+	fileoutput.close();
+}
 
 
 //========================================================= Mo lop TC ===========================================================================
