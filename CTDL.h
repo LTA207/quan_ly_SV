@@ -1,4 +1,3 @@
-#pragma once
 #include "header.h"
 const int MAX_LTC = 10000;
 const int MAX_LOP = 2000;
@@ -23,6 +22,8 @@ struct Sinhvien {
 	string ten;
 	string phai;
 	string SDT;
+	int daDK = 0;
+	bool highlight = 0;
 	//pointer
 	Sinhvien* pnext = NULL;
 };
@@ -47,6 +48,9 @@ struct MonHoc {
 	string TenMH;
 	double STCLT;
 	double STCTH;
+	bool dadk = 0;
+	int freq = 0;
+	bool hightlight = 0;
 	//pointer
 	MonHoc* pleft = NULL;
 	MonHoc* pright = NULL;
@@ -60,17 +64,19 @@ struct LopTC {
 	string MaMH;
 	string nien_khoa;
 	int MaLopTc; // so nguyen tu dong tang
-	int Nhom;
-	int HK;
+	int Nhom = 1;
+	int HK = 1;
 	int min;
 	int max;
 	bool huylop = true;
+	bool hightlight = 0;
 	dsDk pdssvdk;
 };
 struct dsLopTc {
 	LopTC* ds[MAX_LTC];
 	int damo = 0;
 };
+int MA = 0;
 void readfile_dsLop(string str, dsLop& dslop) {
 	ifstream fileinput(str);
 	if (!fileinput.is_open()) {
@@ -89,7 +95,8 @@ void readfile_dsLop(string str, dsLop& dslop) {
 			getline(fileinput, sv->ten);
 			getline(fileinput, sv->phai);
 			getline(fileinput, sv->SDT);
-
+			fileinput >> sv->daDK;
+			fileinput.ignore();
 			sv->pnext = NULL;
 			if (dslop.ds_lop[dslop.soluong].pdsSV.phead == NULL) {
 				dslop.ds_lop[dslop.soluong].pdsSV.phead = sv;
@@ -123,6 +130,7 @@ void writefile_dsLop(string str, dsLop& dslop) {
 				fileoutput << sv->ten << endl;
 				fileoutput << sv->phai << endl;
 				fileoutput << sv->SDT << endl;
+				fileoutput << sv->daDK << endl;
 				sv = sv->pnext;
 			}
 			fileoutput << "###########" << endl;
@@ -143,6 +151,7 @@ void readfile_dsLTC(string str, dsLopTc& dsLTC) {
 			delete LTC;
 			break;
 		}
+		++MA;
 		fileinput.ignore();
 		getline(fileinput, LTC->MaMH);
 		getline(fileinput, LTC->nien_khoa);
@@ -200,8 +209,8 @@ void writefile_dsLTC(string str, dsLopTc& dsLTC) {
 		fileoutput << dsLTC.ds[i]->nien_khoa << endl;
 		fileoutput << dsLTC.ds[i]->HK << endl;
 		fileoutput << dsLTC.ds[i]->Nhom << endl;
-		fileoutput << dsLTC.ds[i]->min << endl;
 		fileoutput << dsLTC.ds[i]->max << endl;
+		fileoutput << dsLTC.ds[i]->min << endl;
 		fileoutput << dsLTC.ds[i]->huylop << endl;
 		while (svDK != NULL) {
 			fileoutput << svDK->MSV << endl;
@@ -213,6 +222,4 @@ void writefile_dsLTC(string str, dsLopTc& dsLTC) {
 	}
 	fileoutput.close();
 }
-
-
-
+#pragma once
