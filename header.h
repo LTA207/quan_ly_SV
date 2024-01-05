@@ -1,4 +1,4 @@
-
+#pragma once
 #include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 using namespace std;
 #define Enter 13
 //const int WHITE=15;
@@ -126,6 +127,8 @@ void fullscreen()
     keybd_event(VK_RETURN, 0x1c, KEYEVENTF_KEYUP, 0);
     keybd_event(VK_MENU, 0x38, KEYEVENTF_KEYUP, 0);
 }
+
+
 void highlight(int option) {
     SetColor(9);
     //SetBGColor(15);
@@ -138,4 +141,4 @@ void normal(int option) {
     gotoxy(13, option + 1);
     //cout << "  ";
 }
-#pragma once
+

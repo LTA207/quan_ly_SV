@@ -46,11 +46,12 @@ struct MonHoc {
 	//data
 	string MaMon;
 	string TenMH;
-	double STCLT;
-	double STCTH;
+	int STCLT = 0;
+	int STCTH = 0;
 	bool dadk = 0;
-	int freq = 0;
+	int freq = 0; 
 	bool hightlight = 0;
+	bool can_delete = 1;
 	//pointer
 	MonHoc* pleft = NULL;
 	MonHoc* pright = NULL;

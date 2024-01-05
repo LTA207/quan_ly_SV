@@ -478,12 +478,11 @@ void khung_ds_lop(int x, int y, int w, int h, int col = 8, int line = 25) {
 	gotoxy(x + w, y + h); cout << char(217);
 	gotoxy(x + w, y + line); cout << char(217);
 	gotoxy(x, y + line); cout << char(192);
-	gotoxy(x += 2, y += 1); cout << "MA LOP";
-	gotoxy(x += w / col, y); cout << "TEN LOP";
+	gotoxy(x += 15, y += 1); cout << "MA LOP";
 }
 
 
-// ====================================================================== DANH SACH SINH VIEN ======================================================
+// ====================================================================== NHAP VA BAT LOI ======================================================
 int nhap_ma_SV(string& maSV, dsLop& dslop, bool key = 0) {
 	char c;
 	string tmp;
@@ -598,7 +597,7 @@ int nhap_ten_SV(string& tenSV) {
 				cout << "\b \b";
 			}
 		}
-		if (tenSV.length() > 10) continue;
+		if (tenSV.length() >10) continue;
 		if (c == ' ' || !isalpha(c)) {
 			continue;
 		}
@@ -641,7 +640,6 @@ string nhap_nien_khoa(string& nien_khoa) {
 	}
 }
 int nhap_gioi_tinh(string& phai) {
-	cout << phai;
 	while (1)
 	{
 		char key;
@@ -766,7 +764,9 @@ int nhap_diem(int diem) {
 	}
 }
 int nhap_ma_lop(string& malop) {
+	SetColor(7);
 	char c;
+	int count = 1;
 	cout << malop;
 	while (1) {
 		c = _getch();
@@ -780,13 +780,22 @@ int nhap_ma_lop(string& malop) {
 		if (c == TAB) return -1;
 		if (c == '\r') {
 			if (malop.empty()) continue;
+			if (malop.length() < 9) continue;
 			break;
 		}
-		if (malop.length() > 10 && c != Backspc && c != TAB) continue;
-		if (!isalpha(c) && c != '-' && c != Backspc && c!= TAB && !isalnum(c)) continue;
-		if (c >= 'a' && c <= 'z') {
-			c = toupper(c);
+
+
+		if (malop.length() > 9 && c != Backspc && c != TAB) continue;
+		if (!isalpha(c) && c != Backspc && c!= TAB && !isalnum(c)) continue;
+
+		if (count == 1 || count == 4 || count == 5 || count == 6 || count == 7) {
+			if (isalpha(c)) c = toupper(c);
+			else continue;
 		}
+		else if (count == 2 || count == 3 || count == 8 || count == 9) {
+			if (c < '0' || c >'9') continue;
+		}
+
 		if (c == Backspc) {
 			if (malop.empty()) continue;
 			else {
@@ -797,9 +806,49 @@ int nhap_ma_lop(string& malop) {
 		}
 		cout << c;
 		malop += c;
+		++count;
 	}
 	return 1;
 }
+string nhap_ten_MH(string& tenMH) {
+	char c;
+	cout << tenMH;
+	while (true) {
+		c = _getch();
+		if (c == 0 || c == -32) {
+			c = _getch();
+			continue;
+		}
+		if (c == ESC) return "";
+		if (c == Enter) {
+			if (tenMH.empty()) continue;
+			return tenMH;
+		}
+		if (tenMH.length() > 15 && c != Backspc && c != Enter) continue;
+		if (!isalpha(c) && c != ' ' && c != Backspc && !isalnum(c)) continue;
+		if (c == ' ' || isalpha(c) || isalnum(c) || c == 17) {
+			if ((tenMH.empty() && c == ' ') || (!tenMH.empty() && tenMH[tenMH.length() - 1] == ' ' && c == ' ')) {
+				continue;
+			}
+			if ('a' <= c && c <= 'z') {
+				c = toupper(c);
+			}
+		}
+		if (c == Backspc) {
+			if (tenMH.empty()) continue;
+			else {
+				tenMH.pop_back();
+				cout << "\b \b";
+				continue;
+			}
+		}
+		cout << c;
+		tenMH += c;
+	}
+}
+
+
+// ====================================================================== DANH SACH SINH VIEN ======================================================
 void in_ds_SV(dsSV& ds, int page) {
 	dsSV SV = ds;
 	int i = 1;
@@ -847,7 +896,7 @@ void in_thong_tin_SV(Sinhvien* sv, int j) {
 	cout << sv->SDT << ' ';
 }
 void in_thong_tin_lop(Lop lop, int j) {
-	int i = 1;
+	int i = 31;
 	gotoxy(i, j);
 	cout << lop.MALOP;
 	gotoxy(i += 35, j);
@@ -878,6 +927,7 @@ void nhap_SV(dsSV& dssv, dsLop& dslop) {
 			count = 0;
 			khung_ds_SV(0, 0, 70, 2);
 			j = 3;
+			SetColor(7);
 		}
 		string maSV;
 		SV = new Sinhvien();
@@ -885,7 +935,7 @@ void nhap_SV(dsSV& dssv, dsLop& dslop) {
 			gotoxy(i, j);
 			cout << "           "; 
 			gotoxy(i, j);
-			if (nhap_ma_SV(maSV, dslop)) break;
+			if (nhap_ma_SV(maSV, dslop, 1)) break;
 		}
 		if (maSV.empty()) {
 			break;
@@ -1020,7 +1070,7 @@ int menu_ds_Lop(dsLop& dslop, int page) {
 	int option = dslop.soluong;
 	if (dslop.soluong % 11 != 0) maxpage = dslop.soluong / 11 + 1;
 	else maxpage = dslop.soluong / 11;
-	khung_ds_lop(0, 0, 70, 2, 2, 25);
+	khung_ds_lop(30, 0, 40, 2, 1, 25);
 	do {
 		int count = 0;
 		int jy = 3;
@@ -1143,10 +1193,14 @@ void hieu_chinh_SV(dsSV& dssv, Sinhvien* sv) {
 			cout << "nhap ten sinh vien: ";
 			if (nhap_ten_SV(ten) == 0) return;
 			else tmp->ten = ten;
+			gotoxy(87, 21);
+			cout << "NU : 0                    NAM : 1";
 			gotoxy(73, 14);
 			cout << "nhap gioi tinh: ";
 			if (nhap_gioi_tinh(phai) == 0) return;
 			else tmp->phai = phai;
+			gotoxy(87, 21);
+			cout << "                                 ";
 			gotoxy(73, 16);
 			cout << "nhap so dien thoai: ";
 			if (nhap_SDT(SDT) == 0) return;
@@ -1190,37 +1244,40 @@ void kiem_tra_ds_SV(dsLop& dslop) {
 	int curpage = 1;
 	int check;
 	int checkSave = 1;
-	for (int iy = 10; iy < 15; ++iy) {
-		gotoxy(40, iy);
-		cout << char(179);
-		gotoxy(70, iy);
-		cout << char(179);
+	while (1) {
+		for (int iy = 10; iy < 15; ++iy) {
+			gotoxy(40, iy);
+			cout << char(179);
+			gotoxy(70, iy);
+			cout << char(179);
+		}
+		for (int ix = 40; ix < 70; ++ix) {
+			gotoxy(ix, 10);
+			cout << char(196);
+			gotoxy(ix, 0 + 14);
+			cout << char(196);
+			gotoxy(ix, 0 + 14);
+			cout << char(196);
+		}
+		gotoxy(40, 10); cout << char(218);
+		gotoxy(70, 10); cout << char(191);
+		gotoxy(70, 14); cout << char(217);
+		gotoxy(40, 14); cout << char(192);
+		gotoxy(49, 11); cout << "Nhap ma lop: ";
+		gotoxy(41, 15); cout << "ESC : THOAT";
+		gotoxy(58, 15); cout << "ENTER : CHON";
+		gotoxy(47, 17); cout << "TAB : XEM DS LOP";
+		gotoxy(30, 19); cout << "MA LOP CHUAN : (KY TU + 2 SO + 3 KY TU + N + 2 SO) E22CQCN01";
+		gotoxy(49, 12); check = nhap_ma_lop(malop);
+		if (check == -1) {
+			system("cls");
+			int i = menu_ds_Lop(dslop, 1);
+			if (i == -1) return;
+			malop = dslop.ds_lop[i].MALOP;
+			system("cls");
+		}
+		else if (check == 0) return;
 	}
-	for (int ix = 40; ix < 70; ++ix) {
-		gotoxy(ix, 10);
-		cout << char(196);
-		gotoxy(ix, 0 + 14);
-		cout << char(196);
-		gotoxy(ix, 0 + 14);
-		cout << char(196);
-	}
-	gotoxy(40, 10); cout << char(218);
-	gotoxy(70, 10); cout << char(191);
-	gotoxy(70, 14); cout << char(217);
-	gotoxy(40, 14); cout << char(192);
-	gotoxy(49, 11); cout << "Nhap ma lop: ";
-	gotoxy(41, 15); cout << "ESC : THOAT"; 
-	gotoxy(58, 15); cout << "ENTER : CHON";
-	gotoxy(47, 17); cout << "TAB : XEM DS LOP";
-	gotoxy(49, 12); check = nhap_ma_lop(malop);
-	if (check == -1) {
-		system("cls");
-		int i = menu_ds_Lop(dslop, 1);
-		if (i == -1) return;
-		malop = dslop.ds_lop[i].MALOP;
-		system("cls");
-	}
-	else if (check == 0) return;
 	for (int i = 0; i < dslop.soluong; ++i) {
 		if (malop == dslop.ds_lop[i].MALOP) {
 			while (1) {
@@ -1239,8 +1296,7 @@ void kiem_tra_ds_SV(dsLop& dslop) {
 					if (!checkSave) {
 						if (khung_xac_nhan("Danh sach chua duoc luu ban co muon luu khong!", 74, 12) == 1) {
 							writefile_dsLop("C:/Users/84773/OneDrive/Máy tính/dsLop.txt", dslop);
-							gotoxy(82, 20); cout << "Da luu thanh cong";
-							Sleep(1500);
+							khung_bao_loi("Da luu thanh cong", 82, 20, 20, 3);
 						}
 						return;
 					}
@@ -1270,16 +1326,14 @@ void kiem_tra_ds_SV(dsLop& dslop) {
 					if (khung_xac_nhan("Ban co chac chan muon xoa sinh vien nay khong!", 74, 12)  == 1) {
 						checkSave = 0;
 						xoa_SV(dslop.ds_lop[i].pdsSV, tmp);
-						gotoxy(82, 20); cout << "Da xoa thanh cong 1 sinh vien";
-						Sleep(1500);
+						khung_bao_loi("Da xoa thanh cong 1 sinh vien", 82, 20, 30, 4);
 					}
 					break;
 				}
 				case F4: {
 					checkSave = 1;
 					writefile_dsLop("C:/Users/84773/OneDrive/Máy tính/dsLop.txt", dslop);
-					gotoxy(87, 15); cout << "Da luu thanh cong";
-					Sleep(1500);
+					khung_bao_loi("Da luu thanh cong", 87, 15, 30, 4);
 				}
 				case LEFT: {
 					if (curpage > 1)
@@ -1297,6 +1351,7 @@ void kiem_tra_ds_SV(dsLop& dslop) {
 	}
 	if (dslop.soluong < 2000) {
 		dslop.ds_lop[dslop.soluong].MALOP = malop;
+		++dslop.soluong;
 		while (1) {
 			int page = 1;
 			if (dslop.ds_lop[dslop.soluong].pdsSV.sl == 0) page = 1;
@@ -1313,7 +1368,7 @@ void kiem_tra_ds_SV(dsLop& dslop) {
 				if (!checkSave) {
 					if (khung_xac_nhan("Danh sach chua duoc luu ban co muon luu khong!", 74, 12) == 1) {
 						writefile_dsLop("C:/Users/84773/OneDrive/Máy tính/dsLop.txt", dslop);
-						gotoxy(82, 20); cout << "Da luu thanh cong";
+						khung_bao_loi("Da luu thanh cong", 82, 20, 20, 3);
 						Sleep(1500);
 					}
 					return;
@@ -1323,12 +1378,14 @@ void kiem_tra_ds_SV(dsLop& dslop) {
 			switch (c) {
 			case F1: {
 				system("cls");
+				checkSave = 0;
 				khung_ds_SV(0, 0, 70, 2);
 				nhap_SV(dslop.ds_lop[dslop.soluong].pdsSV, dslop);
 				break;
 			}
 			case F2: {
 				system("cls");
+				checkSave = 0;
 				khung_ds_SV(0, 0, 70, 2);
 				hieu_chinh_SV(dslop.ds_lop[dslop.soluong].pdsSV, menu_ds_SV(dslop.ds_lop[dslop.soluong].pdsSV, curpage, page));
 				break;
@@ -1339,8 +1396,9 @@ void kiem_tra_ds_SV(dsLop& dslop) {
 				Sinhvien* tmp = menu_ds_SV(dslop.ds_lop[dslop.soluong].pdsSV, curpage, page);
 				if (tmp == NULL) break;
 				if (khung_xac_nhan("Ban co chac chan muon xoa sinh vien nay khong!", 74, 12) == 1) {
+					checkSave = 0;
 					xoa_SV(dslop.ds_lop[dslop.soluong].pdsSV, tmp);
-					gotoxy(82, 20); cout << "Da xoa thanh cong 1 sinh vien";
+					khung_bao_loi("Da xoa thanh cong 1 sinh vien", 82, 20, 30, 4);
 					Sleep(1500);
 				}
 				break;
@@ -1349,6 +1407,7 @@ void kiem_tra_ds_SV(dsLop& dslop) {
 				writefile_dsLop("C:/Users/84773/OneDrive/Máy tính/dsLop.txt", dslop);
 				gotoxy(87, 15); cout << "Da luu thanh cong";
 				Sleep(1500);
+				break;
 			}
 			case LEFT: {
 				if (curpage > 1)
@@ -1362,7 +1421,6 @@ void kiem_tra_ds_SV(dsLop& dslop) {
 			}
 			}
 		}
-		dslop.soluong++;
 	}
 	else {
 		cout << "danh sach lop da day!";
@@ -1402,45 +1460,10 @@ MonHoc* tim_MH(MonHoc*& dsMH, string maMon) {
 	}
 	return NULL;
 }
-string nhap_ten_MH(string& tenMH) {
-	char c;
-	cout << tenMH;
-	while (true) {
-		c = _getch();
-		if (c == 0 || c == -32) {
-			c = _getch();
-			continue;
-		}
-		if (c == ESC) return "";
-		if (c == Enter) {
-			if (tenMH.empty()) continue;
-			return tenMH;
-		}
-		if (tenMH.length() > 15 && c != Backspc && c != Enter) continue;
-		if (!isalpha(c) && c != ' ' && c != Backspc && !isalnum(c)) continue;
-		if (c == ' ' || isalpha(c) || isalnum(c) || c == 17) {
-			if ((tenMH.empty() && c == ' ') || (!tenMH.empty() && tenMH[tenMH.length() - 1] == ' ' && c == ' ')) {
-				continue;
-			}
-			if ('a' <= c && c <= 'z') {
-				c = toupper(c);
-			}
-		}
-		if (c == Backspc) {
-			if (tenMH.empty()) continue;
-			else {
-				tenMH.pop_back();
-				cout << "\b \b";
-				continue;
-			}
-		}
-		cout << c;
-		tenMH += c;
-	}
-}
 int nhap_ma_mon(string& maMH, MonHoc*& dsMH, int check = 1) {
 	SetColor(15);
 	char c;
+	int count = 1;
 	cout << maMH;
 	while (1) {
 		c = _getch();
@@ -1454,6 +1477,7 @@ int nhap_ma_mon(string& maMH, MonHoc*& dsMH, int check = 1) {
 		}
 		if (c == '\r') {
 			if (maMH.empty()) continue;
+			if (maMH.length() < 7) continue;
 			if (check) {
 				if (tim_MH(dsMH, maMH) && check == 1) {
 					khung_bao_loi("MA MON HOC DA TON TAI", 84, 14, 30, 4);
@@ -1463,12 +1487,7 @@ int nhap_ma_mon(string& maMH, MonHoc*& dsMH, int check = 1) {
 			}
 			return 1;
 		}
-		if (maMH.length() > 10) continue;
-		if (c == TAB) return -1;
-		if (!isalpha(c) && c != Backspc && c!= TAB && !isalnum(c)) continue;
-		if (c >= 'a' && c <= 'z') {
-			c = toupper(c);
-		}
+
 		if (c == Backspc) {
 			if (maMH.empty()) continue;
 			else {
@@ -1477,8 +1496,20 @@ int nhap_ma_mon(string& maMH, MonHoc*& dsMH, int check = 1) {
 				continue;
 			}
 		}
+
+		if (maMH.length() > 7 && c != Backspc) continue;
+		if (c == TAB) return -1;
+		if (!isalpha(c) && c != Backspc && c != TAB && !isalnum(c)) continue;
+		if (count <= 3) {
+			if (isalpha(c)) c = toupper(c);
+			else continue;
+		}
+		else if (count > 3) {
+			if ('0' > c || c > '9') continue;
+		}
 		cout << c;
 		maMH += c;
+		if(count <= 7) ++count;
 	}
 }
 void xoay_trai(MonHoc*& MH) {
@@ -1546,7 +1577,7 @@ void can_bang(MonHoc*& MH) {
 	if (MH->pleft != NULL) can_bang(MH->pleft);
 	if (MH->pright != NULL) can_bang(MH->pright);
 }
-
+// =================================================== DOC VA GHI FILE DANH SACH MH =====================================
 int read_data(MonHoc*& MH, ifstream& fileinput, string maMon) {
 	if (maMon == "=====================") return 0;
 	if (MH == NULL) {
@@ -1615,12 +1646,12 @@ void writefile_dsMH(string str, dsMonHoc& dsMH) {
 	write_Data(dsMH.ds, fileoutput);
 	fileoutput.close();
 }
-
-int them_MH(MonHoc*& dsMH, string maMH, int y, bool check = 0, string tenMH = "", double STCLT = 0, double STCTH = 0) {
+// ================================================ THEM MH ==============================================================
+int them_MH(MonHoc*& dsMH, string maMH, int y, bool check = 0, string tenMH = "", int STCLT = 0, int STCTH = 0) {
 	SetColor(15);
 	int x = 76;
 	if (!check) {
-		double tmp1, tmp2;
+		int tmp1, tmp2;
 		gotoxy(x, y += 2);
 		cout << "Nhap ten mon hoc: ";
 		if (nhap_ten_MH(tenMH) == "") return 0;
@@ -1657,6 +1688,7 @@ int them_MH(MonHoc*& dsMH, string maMH, int y, bool check = 0, string tenMH = ""
 	}
 	return 0;
 }
+// ================================================= XOA VA HIEU CHINH MH ================================================
 void thay_the(MonHoc*& tmp, MonHoc*& MH) {
 	if (MH->pleft != NULL) thay_the(tmp, MH->pleft);
 	else {
@@ -1709,7 +1741,7 @@ void hieu_chinh_MH(MonHoc*& dsMH, string maMH) {
 	cout << "Nhap ma mon hoc: "; nhap_ma_mon(newMaMH, dsMH, 0);
 	if (newMaMH == "") return;
 	string tenMH = MH->TenMH;
-	double STCLT = MH->STCLT, STCTH = MH->STCTH;
+	int STCLT = MH->STCLT, STCTH = MH->STCTH;
 	if (newMaMH == maMH) {
 		gotoxy(x, y += 2);
 		cout << "Nhap ten mon hoc: ";
@@ -1734,6 +1766,7 @@ void hieu_chinh_MH(MonHoc*& dsMH, string maMH) {
 	int check = them_MH(dsMH, newMaMH, y, 0, tenMH, STCLT, STCTH);
 	if (check) xoa_MH(dsMH, maMH);
 }
+// ================================================ IN THONG TIN MH KEM DO HOA =========================================
 void in_ds_MH_1(MonHoc*& MH, int& y, int& count, int page) {
 	int x = 1;
 	if (MH != NULL) {
@@ -1797,6 +1830,7 @@ void in_ds_MH(MonHoc*& MH, int choice, int& count, int& y, int page) {
 		in_ds_MH(MH->pright, choice, count, y, page);
 	}
 }
+// =============================================== CHEN VA IN MH THEO TEN ===============================================
 void chen_MH_theo_ten(MonHoc* MH, MonHoc** MHarr, int& i) {
 	if (MH != NULL) {
 		chen_MH_theo_ten(MH->pleft, MHarr, i);
@@ -1855,6 +1889,7 @@ void in_ds_MH_theo_ten(dsMonHoc& dsMH) {
 		}
 	}
 }
+//================================================ MENU VA CAP NHAT MH ====================================================
 string tim_ma_MH(MonHoc*& dsMH, int choice, int& count) {
 	if (dsMH != NULL) {
 		string leftResult = tim_ma_MH(dsMH->pleft, choice, count);
@@ -2075,7 +2110,7 @@ void ds_MH(dsMonHoc& dsMH) {
 }
 
 
-//========================================================= Mo lop TC ===========================================================================
+//========================================================= CAC THAO TAC LIEN QUAN TOI LOP TC ===========================================================================
 int MaLTC(string MaMH) {
 	int MaLTC = ++MA;
 	return MaLTC;
@@ -2255,58 +2290,14 @@ LopTC* tim_lopTC(dsLopTc& DSLTC, string maMH) {
 		}
 	}
 }
-int them_lop_TC(dsLopTc& DSLTC, dsMonHoc& dsMH) {
-	int y = 13;
-	string MaMH;
-	int x = 20;
-	LopTC* p = new LopTC();
-	gotoxy(x, y);
-	if (nhap_ma_mon(p->MaMH, dsMH.ds, 0) == -1) {
-		system("cls");
-		menu_ds_MH(dsMH, 1, 1, p->MaMH);
-		system("cls");
-		khung_LTC(4, 10, 120, 2, 8, 4);
-	}
-	if (p->MaMH == "") return 0;
-	else {
-		gotoxy(x, y); cout << p->MaMH;
-	}
-	p->MaLopTc = MaLTC(p->MaMH);
-	gotoxy(x += 15, y);
-	nhap_nien_khoa(p->nien_khoa);
-	if (p->nien_khoa == "") return 0;
-	gotoxy(x += 15, y);
-	p->HK == nhap_diem(p->HK);
-	if (p->HK == -1) return 0;
-	else if (p->HK == -2) p->HK = 1;
-	gotoxy(x += 15, y);
-	p->Nhom = nhap_diem(p->Nhom);
-	if (p->Nhom == -1) return 0;
-	else if (p->Nhom == -2) p->Nhom = 1;
-	while (1) {
-		int max = p->max, min = p->min;
-		gotoxy(x += 15, y);
-		p->max = nhap_diem(p->max);
-		if (p->max == -1) return 0;
-		else if (p->max == -2) p->max = max;
-
-		gotoxy(x += 15, y);
-		p->min = nhap_diem(p->min);
-		if (p->min == -1) return 0;
-		else if (p->min == -2) p->min = min;
-		if (p->min < p->max) {
-			p->huylop = 1;
-			p->hightlight = 1;
-			cin.ignore();
-			DSLTC.ds[DSLTC.damo] = p;
-			++DSLTC.damo;
+int kiem_tra_lopTC(dsLopTc& DSLTC, LopTC* ltc) {
+	for (int i = 0; i < DSLTC.damo; ++i) {
+		if (DSLTC.ds[i]->MaMH == ltc->MaMH && DSLTC.ds[i]->nien_khoa == ltc->nien_khoa && DSLTC.ds[i]->HK == ltc->HK && DSLTC.ds[i]->Nhom == ltc->Nhom) {
+			khung_bao_loi("Lop TC ban vua nhap da ton tai", 40, 15, 35, 4);
 			return 1;
 		}
-		else {
-			khung_bao_loi("thong tin ban vua nhap khong hop le", 50, 20, 40, 4);
-			x -= 30;
-		}
 	}
+	return 0;
 }
 DangKy* tim_sv_dk_lop_TC(LopTC*& ltc, string maSV) {
 	DangKy* tmp = ltc->pdssvdk.phead;
@@ -2318,6 +2309,88 @@ DangKy* tim_sv_dk_lop_TC(LopTC*& ltc, string maSV) {
 	}
 	return NULL;
 }
+//============================================== THEM LOP TC ==============================================================
+int them_lop_TC(dsLopTc& DSLTC, dsMonHoc& dsMH) {
+	LopTC* p = new LopTC();
+	string MaMH;
+	int y = 13;
+	int x = 20;
+	int check;
+	while (1) {
+		gotoxy(x, y);
+		check = nhap_ma_mon(p->MaMH, dsMH.ds, 0);
+		if (check == -1) {
+			system("cls");
+			if (menu_ds_MH(dsMH, 1, 1, p->MaMH) == "") {
+				system("cls");
+				khung_LTC(4, 10, 120, 2, 8, 4); 
+				continue;
+			}
+		}
+		if (p->MaMH == "") return 0;
+		else {
+			SetColor(7);
+			gotoxy(x, y); cout << p->MaMH;
+			break;
+		}
+	}
+	p->MaLopTc = MaLTC(p->MaMH);
+	while (1) {
+		SetColor(7);
+		gotoxy(x = 35, y);
+		nhap_nien_khoa(p->nien_khoa);
+		if (stoi(p->nien_khoa) < 2000 || stoi(p->nien_khoa) > 2024) {
+			khung_bao_loi("Nien khoa ban vua nhap khong hop le", 40, 18, 38, 4);
+			continue;
+		}
+		if (p->nien_khoa == "") return 0;
+		break;
+	}
+	while (1) {
+		SetColor(7);
+		gotoxy(x = 50, y);
+		p->HK = nhap_diem(p->HK);
+		if (p->HK > 4) {
+			khung_bao_loi("Nien khoa ban vua nhap khong hop le", 40, 18, 38, 4);
+			continue;
+		}
+		if (p->HK == -1) return 0;
+		else if (p->HK == -2) p->HK = 1;
+		break;
+	}
+	gotoxy(x += 15, y);
+	p->Nhom = nhap_diem(p->Nhom);
+	if (p->Nhom == -1) return 0;
+	else if (p->Nhom == -2) p->Nhom = 1;
+	while (1) {
+		SetColor(7);
+		int max = p->max, min = p->min;
+		gotoxy(x += 15, y);
+		p->max = nhap_diem(p->max);
+		if (p->max == -1) return 0;
+		else if (p->max == -2) p->max = max;
+
+		gotoxy(x += 15, y);
+		p->min = nhap_diem(p->min);
+		if (p->min == -1) return 0;
+		else if (p->min == -2) p->min = min;
+
+		if (p->min < p->max) break;
+		else {
+			khung_bao_loi("thong tin ban vua nhap khong hop le", 50, 20, 40, 4);
+			x -= 30;
+		}
+	}
+	if (!kiem_tra_lopTC(DSLTC, p)) {
+		p->huylop = 1;
+		p->hightlight = 1;
+		MonHoc* MH = dsMH.ds;
+		DSLTC.ds[DSLTC.damo] = p;
+		++DSLTC.damo;
+		return 1;
+	}
+}
+// ============================================= XOA VA HIEU CHINH LOP TC =================================================
 void xoa_lop_TC(dsLopTc& DSLTC, LopTC* lop) {
 	if (lop == NULL) return;
 	for (int i = 0; i < DSLTC.damo; ++i) {
@@ -2407,6 +2480,7 @@ int hieu_chinh_lop_TC(dsLopTc& DSLTC, LopTC* lop, dsMonHoc& dsMH) {
 	}
 	return 1;
 }
+// ============================================= MENU VA CAP NHAT LOP TC ==================================================
 LopTC* menu_Mo_Lop_TC(dsLopTc& DSLTC, int& page, int maxpage) {
 	int choice = page * 11 - 11;
 	int option = DSLTC.damo;
@@ -2569,20 +2643,17 @@ void cap_nhat_lop_TC(dsLopTc& dsLTC, dsMonHoc& dsMH) {
 				}
 				}
 			}*/
+			if (loptc->pdssvdk.sl >= loptc->min) khung_bao_loi("Khong the xoa lop TC nay", 40, 20, 30, 4);
 			if (khung_xac_nhan("Ban co chac chan muon xoa lop TC nay khong!", 35, 18) == 1) {
 				//if (check) {
 				checkSave = 0;
 				xoa_lop_TC(dsLTC, loptc);
-				gotoxy(40, 24); cout << "Da xoa thanh cong 1 lop TC";
+				khung_bao_loi("Da xoa thanh cong 1 lop TC", 40, 24, 30, 4);
 				Sleep(1500);
-				system("cls");
-				khung_LTC(0, 0, 120, 2, 8, 16, 1);
 				//}
 			}
-			else {
-				system("cls");
-				khung_LTC(0, 0, 120, 2, 8, 16, 1);
-			}
+			system("cls");
+			khung_LTC(0, 0, 120, 2, 8, 16, 1);
 			break;
 		}
 		case F4: {
@@ -2612,6 +2683,7 @@ void cap_nhat_lop_TC(dsLopTc& dsLTC, dsMonHoc& dsMH) {
 		}
 	}
 }
+// ============================================= IN DS DK LOP TC ==========================================================
 void in_ds_SV_DK(dsLopTc& dsLTC, dsLop& dslop, dsMonHoc& dsMH) {
 	int page = 1;
 	int maxpage;
@@ -2728,7 +2800,9 @@ void in_ds_SV_DK(dsLopTc& dsLTC, dsLop& dslop, dsMonHoc& dsMH) {
 	}
 	delete loptc;
 }
-// chua hoan thien
+
+
+// ============================================= DK VA HUY LOP TC ==========================================================
 void in_lop_TC_DK(LopTC* LTC, dsMonHoc& dsMH, int y) {
 	int x = 1;
 	gotoxy(x, y); cout << LTC->MaMH;
@@ -3131,6 +3205,7 @@ void Nhap_diem(dsLopTc& dsltc, dsLop& dslop, dsMonHoc& dsMH) {
 	if (maMH == "") return;*/
 	LopTC* loptc = new LopTC();
 	while (1) {
+		SetColor(3);
 		for (int iy = 10; iy < 15; ++iy) {
 			gotoxy(40, iy);
 			cout << char(179);
@@ -3220,7 +3295,7 @@ void in_bang_diem_MH(LopTC* ltc, dsLop& dslop, int page, string tenMH){
 
 double tinh_diem_TB(dsLopTc& dsltc, string maSV, dsMonHoc& dsMH) {
 	double diemTB = 0;
-	double soTC = 0;
+	int soTC = 0;
 	int check = 0;
 	for (int i = 0; i < dsltc.damo; ++i) {
 		DangKy* dk = dsltc.ds[i]->pdssvdk.phead;
@@ -3271,7 +3346,7 @@ void in_bang_diem_TB(dsLopTc& dsltc, Lop& lop, dsMonHoc& dsMH, int page) {
 }
 
 double is_max_score(dsLopTc& dsLTC, string ma_mon, string maSV, double score, int index) {
-	int maxScore = score;
+	double maxScore = score;
 	for (int i = index; i < dsLTC.damo; ++i) {
 		if (dsLTC.ds[i]->MaMH == ma_mon) {
 			DangKy* dk = dsLTC.ds[i]->pdssvdk.phead;
@@ -3446,9 +3521,9 @@ void in_bang_diem(dsLopTc& dsltc, dsMonHoc& dsMH, dsLop& dslop) {
 						break;
 					}
 					else if (maMH != "") {
-						system("cls");
+						//system("cls");
 						if (tim_MH(dsMH.ds, maMH) == NULL) {
-							khung_bao_loi("KHONG TIM THAY MA MON HOC", 59, 14, 30, 4);
+							khung_bao_loi("KHONG TIM THAY MA MON HOC", 40, 19, 30, 4);
 							continue;
 						}
 						loptc = tim_lopTC(dsltc, maMH);
@@ -3517,7 +3592,7 @@ CASE_1:		    system("cls");
 				gotoxy(49, 11); cout << "Nhap ma lop: ";
 				gotoxy(41, 15); cout << "ESC : THOAT";
 				gotoxy(58, 15); cout << "ENTER : CHON";
-				gotoxy(45, 17); cout << "TAB : XEM DS MON HOC";
+				gotoxy(45, 17); cout << "TAB : XEM DS LOP";
 				gotoxy(49, 12);
       			check = nhap_ma_lop(malop);
 				// nhập hoặc chọn mã lớp từ danh sách lớp
@@ -3597,7 +3672,7 @@ CASE_2:			system("cls");
 				gotoxy(49, 11); cout << "Nhap ma lop: ";
 				gotoxy(41, 15); cout << "ESC : THOAT";
 				gotoxy(58, 15); cout << "ENTER : CHON";
-				gotoxy(45, 17); cout << "TAB : XEM DS MON HOC";
+				gotoxy(45, 17); cout << "TAB : XEM DS LOP";
 				gotoxy(49, 12);
 				check = nhap_ma_lop(malop);
 				// chọn lớp từ danh sách lớp
@@ -3707,6 +3782,8 @@ CASE_2:			system("cls");
 		}
 	}
 }
+
+// ================================================================= DOC FILE ASCII ART ================================================================================
 void readfile(string str, int x = 50 , int y = 8) {
 	SetColor(20);
 	SetBGColor(0);
@@ -3722,6 +3799,8 @@ void readfile(string str, int x = 50 , int y = 8) {
 		++y;
 	}
 }
+
+// ================================================================= DOC FILE VA THAO TAC VOI THREAD ===================================================================
 void readfile1(string str, int i, int x = 50, int y = 8) {
 	SetColor(20);
 	string s;
@@ -3750,6 +3829,8 @@ void giao_dien_chinh() {
 	}
 	system("cls");
 }
+
+
 int main() {
 	fullscreen();
 	//SetColor(4);
@@ -3924,7 +4005,6 @@ int main() {
 				return 0;
 			}
 			}
-		}
 		}
 	}
 }
