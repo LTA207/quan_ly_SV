@@ -355,18 +355,18 @@ void khung_ds_SV(int x, int y, int w, int h, int line = 25, bool check = 1) {
 	gotoxy(x += 15, y); cout << "TEN";
 	gotoxy(x += 10, y); cout << "GIOI TINH";
 	gotoxy(x += 14, y); cout << "SDT";
+	gotoxy(124, 1); cout << "UP";
+	gotoxy(124, 2); cout << char(94);
+	gotoxy(123, 5); cout << "DOWN";
+	gotoxy(124, 4); cout << "v";
+	gotoxy(126, 3); cout << "> RIGHT";
+	gotoxy(117, 3); cout << "LEFT <";
+	gotoxy(90, 5); cout << "ESC: Thoat";
 	if (check) {
 		gotoxy(80, 1); cout << "F1:Them SV";
 		gotoxy(95, 1); cout << "F2: Hieu chinh";
 		gotoxy(75, 5); cout << "F3: Xoa SV";
-		gotoxy(90, 5); cout << "ESC: Thoat";
 		gotoxy(105, 5); cout << "F4 : SAVE";
-		gotoxy(124, 1); cout << "UP";
-		gotoxy(124, 2); cout << char(94);
-		gotoxy(123, 5); cout << "DOWN";
-		gotoxy(124, 4); cout << "v";
-		gotoxy(126, 3); cout << "> RIGHT";
-		gotoxy(117, 3); cout << "LEFT <";
 		x = 72;
 		y = 8;
 		for (int iy = y; iy < y + 17; ++iy) {
@@ -487,6 +487,7 @@ int nhap_ma_SV(string& maSV, dsLop& dslop, bool key = 0) {
 	char c;
 	string tmp;
 	bool check = 0;
+	int count = 1;
 	cout << maSV;
 	while (1) {
 		c = _getch();
@@ -518,18 +519,30 @@ int nhap_ma_SV(string& maSV, dsLop& dslop, bool key = 0) {
 			maSV = tmp;
 			return 1;
 		}
-		if (tmp.length() > 10 && c != Backspc && c != Enter) continue;
-		if (!isalpha(c) && c != 8 && !isalnum(c)) continue;
-		if (c >= 'a' && c <= 'z') {
-			c = toupper(c);
-		}
 		if (c == Backspc) {
 			if (tmp.empty()) continue;
 			else {
+				--count;
 				tmp.pop_back();
 				cout << "\b \b";
 				continue;
 			}
+		}
+
+
+		if (tmp.length() > 9 && c != Backspc && c != Enter) continue;
+		if (!isalpha(c) && c != 8 && !isalnum(c)) continue;
+
+		if (count == 1 || count == 4 || count == 5 || count == 6 || count == 7) {
+			if (isalpha(c)) {
+				c = toupper(c);
+				++count;
+			}
+			else continue;
+		}
+		else {
+			if (c < '0' || c > '9') continue;
+			else ++count;
 		}
 		cout << c;
 		tmp += c;
@@ -780,35 +793,36 @@ int nhap_ma_lop(string& malop) {
 		if (c == TAB) return -1;
 		if (c == '\r') {
 			if (malop.empty()) continue;
-			if (malop.length() < 9) continue;
-			break;
+			return 1;
 		}
-
-
-		if (malop.length() > 9 && c != Backspc && c != TAB) continue;
-		if (!isalpha(c) && c != Backspc && c!= TAB && !isalnum(c)) continue;
-
-		if (count == 1 || count == 4 || count == 5 || count == 6 || count == 7) {
-			if (isalpha(c)) c = toupper(c);
-			else continue;
-		}
-		else if (count == 2 || count == 3 || count == 8 || count == 9) {
-			if (c < '0' || c >'9') continue;
-		}
-
 		if (c == Backspc) {
 			if (malop.empty()) continue;
 			else {
 				malop.pop_back();
 				cout << "\b \b";
+				--count;
 				continue;
 			}
 		}
+
+
+		if (malop.length() > 8 && c != Backspc && c != TAB) continue;
+		if (!isalpha(c) && c != Backspc && c != TAB && !isalnum(c)) continue;
+		if (count == 1 || count == 4 || count == 5 || count == 6 || count == 7) {
+			if (isalpha(c)) {
+				c = toupper(c);
+				++count;
+			}
+			else continue;
+		}
+		else if (count == 2 || count == 3 || count == 8 || count == 9) {
+			if (c < '0' || c >'9') continue;
+			else ++count;
+		}
+
 		cout << c;
 		malop += c;
-		++count;
 	}
-	return 1;
 }
 string nhap_ten_MH(string& tenMH) {
 	char c;
@@ -1269,6 +1283,7 @@ void kiem_tra_ds_SV(dsLop& dslop) {
 		gotoxy(47, 17); cout << "TAB : XEM DS LOP";
 		gotoxy(30, 19); cout << "MA LOP CHUAN : (KY TU + 2 SO + 3 KY TU + N + 2 SO) E22CQCN01";
 		gotoxy(49, 12); check = nhap_ma_lop(malop);
+		if (check == 1) break;
 		if (check == -1) {
 			system("cls");
 			int i = menu_ds_Lop(dslop, 1);
@@ -1465,6 +1480,7 @@ int nhap_ma_mon(string& maMH, MonHoc*& dsMH, int check = 1) {
 	char c;
 	int count = 1;
 	cout << maMH;
+	if (!maMH.empty()) count = 8;
 	while (1) {
 		c = _getch();
 		if (c == 0 || c == -32) {
@@ -1491,13 +1507,14 @@ int nhap_ma_mon(string& maMH, MonHoc*& dsMH, int check = 1) {
 		if (c == Backspc) {
 			if (maMH.empty()) continue;
 			else {
+				--count;
 				maMH.pop_back();
 				cout << "\b \b";
 				continue;
 			}
 		}
 
-		if (maMH.length() > 7 && c != Backspc) continue;
+		if (maMH.length() > 6 && c != Backspc && c != TAB) continue;
 		if (c == TAB) return -1;
 		if (!isalpha(c) && c != Backspc && c != TAB && !isalnum(c)) continue;
 		if (count <= 3) {
@@ -1985,7 +2002,7 @@ string menu_ds_MH(dsMonHoc& dsMH, int page, int maxpage, string& selected) {
 		}
 	}
 }
-void ds_MH(dsMonHoc& dsMH) {
+void ds_MH(dsMonHoc& dsMH, dsLopTc& dsltc) {
 	int maxpage;
 	int page = 1;
 	int checkSave = 1;
@@ -2045,47 +2062,16 @@ void ds_MH(dsMonHoc& dsMH) {
 			if(menu_ds_MH(dsMH, page, maxpage, selected) == "") break;
 			bool check = 1;
 			int choice = 0;
-			/*gotoxy(80, 13); cout << "Ban co muon xoa mon hoc nay khong!";
-			khung_lua_chon(76, 15, 7, 2);
-			khung_lua_chon(110, 15, 7, 2);
-			while (1) {
-				for (int i = 0; i < 2; ++i) {
-					if (i == choice) SetColor(20);
-					else SetColor(7);
-					switch (i) {
-					case 0: {
-						gotoxy(79, 16); cout << "co";
-						break;
-					}
-					case 1: {
-						gotoxy(111, 16); cout << "khong";
-						break;
-					}
-					}
+			for(int i=0;i<dsltc.damo;++i) {
+				if (dsltc.ds[i]->MaMH == selected) khung_bao_loi("khong the xoa mon hoc nay", 78, 13, 30, 4);
+				else if (khung_xac_nhan("Ban co chac chan muon xoa mon hoc nay khong!", 78, 13) == 1) {
+					checkSave = 0;
+					xoa_MH(dsMH.ds, selected);
+					dsMH.sl--;
+					--y;
+					can_bang(dsMH.ds);
 				}
-				char key = _getch();
-				if (key == 13) break;
-				switch (key) {
-				case LEFT: {
-					--choice;
-					if (choice < 0) choice = 0;
-					check = 1;
-					break;
-				}
-				case RIGHT: {
-					++choice;
-					if (choice > 1) choice = 1;
-					check = 0;
-					break;
-				}
-				}
-			}*/
-			if (khung_xac_nhan("Ban co chac chan muon xoa mon hoc nay khong!", 78, 13) == 1) {
-				checkSave = 0;
-				xoa_MH(dsMH.ds, selected);
-				dsMH.sl--;
-				--y;
-				can_bang(dsMH.ds);
+				break;
 			}
 			break;
 		}
@@ -2351,7 +2337,7 @@ int them_lop_TC(dsLopTc& DSLTC, dsMonHoc& dsMH) {
 		gotoxy(x = 50, y);
 		p->HK = nhap_diem(p->HK);
 		if (p->HK > 4) {
-			khung_bao_loi("Nien khoa ban vua nhap khong hop le", 40, 18, 38, 4);
+			khung_bao_loi("Hoc ki ban vua nhap khong hop le", 40, 18, 38, 4);
 			continue;
 		}
 		if (p->HK == -1) return 0;
@@ -2644,7 +2630,8 @@ void cap_nhat_lop_TC(dsLopTc& dsLTC, dsMonHoc& dsMH) {
 				}
 			}*/
 			if (loptc->pdssvdk.sl >= loptc->min) khung_bao_loi("Khong the xoa lop TC nay", 40, 20, 30, 4);
-			if (khung_xac_nhan("Ban co chac chan muon xoa lop TC nay khong!", 35, 18) == 1) {
+			else
+				if (khung_xac_nhan("Ban co chac chan muon xoa lop TC nay khong!", 35, 18) == 1) {
 				//if (check) {
 				checkSave = 0;
 				xoa_lop_TC(dsLTC, loptc);
@@ -2747,7 +2734,7 @@ void in_ds_SV_DK(dsLopTc& dsLTC, dsLop& dslop, dsMonHoc& dsMH) {
 		else return;
 	}
 	system("cls");
-	khung_ds_SV(0, 0, 70, 2);
+	khung_ds_SV(0, 0, 70, 2, 25, 0);
 	if (loptc->pdssvdk.sl % 11 != 0)
 		maxpage = loptc->pdssvdk.sl / 11 + 1;
 	else maxpage = loptc->pdssvdk.sl / 11;
@@ -2784,7 +2771,7 @@ void in_ds_SV_DK(dsLopTc& dsLTC, dsLop& dslop, dsMonHoc& dsMH) {
 			if (page > 1) {
 				--page;
 				system("cls");
-				khung_ds_SV(0, 0, 70, 2);
+				khung_ds_SV(0, 0, 70, 2, 25, 0);
 			}
 			break;
 		}
@@ -2792,7 +2779,7 @@ void in_ds_SV_DK(dsLopTc& dsLTC, dsLop& dslop, dsMonHoc& dsMH) {
 			if (page < maxpage) {
 				system("cls");
 				++page;
-				khung_ds_SV(0, 0, 70, 2);
+				khung_ds_SV(0, 0, 70, 2, 25, 0);
 			}
 			break;
 		}
@@ -3045,11 +3032,30 @@ void DK_LOP_TC(dsLopTc& dsltc, dsLop& dslop, dsMonHoc& dsMH) {
 	gotoxy(40, 1); cout << "SDT: " << tmp->SDT;
 	gotoxy(65, 2); cout << "GIOI TINH: " << tmp->phai;
 	gotoxy(90, 1); cout << "NIEN KHOA: ";
-	nhap_nien_khoa(nien_khoa);
-	if (nien_khoa == "") return;
+	while (1) {
+		SetColor(7);
+		nhap_nien_khoa(nien_khoa);
+		if (stoi(nien_khoa) < 2000 || stoi(nien_khoa) > 2024) {
+			khung_bao_loi("Nien khoa ban vua nhap khong hop le", 40, 18, 38, 4);
+			continue;
+		}
+		if (nien_khoa == "") return;
+		break;
+	}
 	gotoxy(115, 2); cout << "HOC KI: ";
-	while(hk == 0) hk = nhap_diem(0);
-	if (hk == -1) return;
+	int x = wherex(), y = wherey();
+	while (1) {
+		SetColor(7);
+		gotoxy(x, y);
+		hk = nhap_diem(hk);
+		if (hk > 4) {
+			khung_bao_loi("Hoc ki ban vua nhap khong hop le", 40, 18, 38, 4);
+			continue;
+		}
+		if (hk == -1) return;
+		else if (hk == -2) hk = 1;
+		break;
+	}
 	while (1) {
 		gotoxy(1, 1); cout << "HO: " << tmp->ho;
 		gotoxy(25, 2); cout << "TEN: " << tmp->ten;
@@ -3936,7 +3942,7 @@ int main() {
 				break;
 			}
 			case 1: {
-				ds_MH(dsMH);
+				ds_MH(dsMH, dsLTC);
 				writefile_dsMH("C:/Users/84773/OneDrive/Máy tính/dsMonHoc.txt", dsMH);
 				system("cls");
 				khung_giao_dien_chinh();
@@ -4005,6 +4011,7 @@ int main() {
 				return 0;
 			}
 			}
+		}
 		}
 	}
 }
