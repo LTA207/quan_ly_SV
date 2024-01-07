@@ -1313,6 +1313,7 @@ void kiem_tra_ds_SV(dsLop& dslop) {
 							writefile_dsLop("C:/Users/84773/OneDrive/Máy tính/dsLop.txt", dslop);
 							khung_bao_loi("Da luu thanh cong", 82, 20, 20, 3);
 						}
+						else khung_bao_loi("khong luu thanh cong", 90, 20, 20, 4);
 						return;
 					}
 					return;
@@ -1349,6 +1350,7 @@ void kiem_tra_ds_SV(dsLop& dslop) {
 					checkSave = 1;
 					writefile_dsLop("C:/Users/84773/OneDrive/Máy tính/dsLop.txt", dslop);
 					khung_bao_loi("Da luu thanh cong", 87, 15, 30, 4);
+					break;
 				}
 				case LEFT: {
 					if (curpage > 1)
@@ -2023,13 +2025,14 @@ void ds_MH(dsMonHoc& dsMH, dsLopTc& dsltc) {
 		c = _getch();
 		if (c == ESC) {
 			if (!checkSave) {
-				if (khung_xac_nhan("Danh sach chua duoc luu ban co muon luu khong!", 76, 14) == 1) {
+				if (khung_xac_nhan("Danh sach chua duoc luu ban co muon luu vao file khong!", 76, 14) == 1) {
 					writefile_dsMH("C:/Users/84773/OneDrive/Máy tính/dsMonHoc.txt", dsMH);
 					khung_bao_loi("da luu thanh cong", 90, 20, 20, 4);
 				}
-				break;
+				else khung_bao_loi("khong luu", 90, 20, 20, 4);
+				return;
 			}
-			break;
+			return;
 		}
 		switch (c) {
 		case F1: {
@@ -2573,6 +2576,9 @@ void cap_nhat_lop_TC(dsLopTc& dsLTC, dsMonHoc& dsMH) {
 		case F1: {
 			system("cls");
 			khung_LTC(4, 10, 120, 2, 8, 4);
+			gotoxy(30, 16); cout << "ENTER : CHON";
+			gotoxy(50, 16); cout << "TAB : XEM DS MH";
+			gotoxy(70, 16); cout << "ESC : THOAT";
 			if (them_lop_TC(dsLTC, dsMH)) checkSave = 0;
 			system("Cls");
 			khung_LTC(0, 0, 120, 2, 8, 16, 1);
@@ -3935,7 +3941,6 @@ int main() {
 			case 0: {
 				kiem_tra_ds_SV(dslop);
 				system("cls");
-				writefile_dsLop("C:/Users/84773/OneDrive/Máy tính/dsLop.txt", dslop);
 				khung_giao_dien_chinh();
 				readfile("C:/Users/84773/OneDrive/Máy tính/test.txt");
 				readfile("C:/Users/84773/OneDrive/Máy tính/Quan_ly_SV.txt", 20, 1);
@@ -3943,7 +3948,6 @@ int main() {
 			}
 			case 1: {
 				ds_MH(dsMH, dsLTC);
-				writefile_dsMH("C:/Users/84773/OneDrive/Máy tính/dsMonHoc.txt", dsMH);
 				system("cls");
 				khung_giao_dien_chinh();
 				readfile("C:/Users/84773/OneDrive/Máy tính/test.txt");
@@ -3962,7 +3966,6 @@ int main() {
 			case 3: {
 				system("cls");
 				cap_nhat_lop_TC(dsLTC, dsMH);
-				writefile_dsLTC("C:/Users/84773/OneDrive/Máy tính/dsLTC.txt", dsLTC);
 				system("cls");
 				khung_giao_dien_chinh();
 				readfile("C:/Users/84773/OneDrive/Máy tính/test.txt");
