@@ -210,7 +210,7 @@ void khung_LTC(int x, int y, int w, int h, int col = 8, int line = 25, int check
 	gotoxy(x += w / col, y); cout << "SO SV MAX";
 	gotoxy(x += w / col, y); cout << "SO SV MIN";
 	if (check) {
-		gotoxy(107, 7); cout << "F1:Them SV";
+		gotoxy(107, 7); cout << "F1: Mo Lop TC";
 		gotoxy(120, 7); cout << "F2: Hieu chinh";
 		gotoxy(107, 13); cout << "F3: Xoa SV";
 		gotoxy(120, 13); cout << "ESC: Thoat";
@@ -226,7 +226,7 @@ void khung_LTC(int x, int y, int w, int h, int col = 8, int line = 25, int check
 void khung_dk_LTC(string str, int x, int y, int w, int h) {
 	SetColor(3);
 	gotoxy(40, y - 1); cout << str;
-	for (int i = 0; i <= w; i += 15) {
+	for (int i = 0; i <= w - 15; i += 15) {
 		for (int iy = y; iy < y + 12; ++iy) {
 			gotoxy(x, iy);
 			cout << char(179);
@@ -234,7 +234,7 @@ void khung_dk_LTC(string str, int x, int y, int w, int h) {
 			cout << char(179);
 		}
 	}
-	for (int ix = x; ix < x + w; ++ix) {
+	for (int ix = x; ix < x + w - 15; ++ix) {
 		gotoxy(ix, y);
 		cout << char(196);
 		gotoxy(ix, y + h);
@@ -243,17 +243,20 @@ void khung_dk_LTC(string str, int x, int y, int w, int h) {
 		cout << char(196);
 	}
 	gotoxy(x, y); cout << char(218);
-	gotoxy(x + w, y); cout << char(191);
+	gotoxy(x + w - 15, y); cout << char(191);
 	gotoxy(x, y + h); cout << char(192);
-	gotoxy(x + w, y + h); cout << char(217);
-	gotoxy(x + w, y + 12); cout << char(217);
+	gotoxy(x + w - 15, y + h); cout << char(217);
+	gotoxy(x + w - 15, y + 12); cout << char(217);
 	gotoxy(x, y + 12); cout << char(192);
 	gotoxy(x += 2, y += 1); cout << "MA MON";
 	gotoxy(x += 15, y); cout << "TEN MON";
 	gotoxy(x += 15, y); cout << "NHOM";
 	gotoxy(x += 15, y); cout << "SO SV DA DK";
 	gotoxy(x += 15, y); cout << "SO SLOT TRONG";
-	gotoxy(x += 15, y); cout << "TRANG THAI";
+	gotoxy(110, 5); cout << "F1 : DK MON";
+	gotoxy(110, 6); cout << "F3 : HUY MON";
+	gotoxy(90, 5); cout << "ENTER : CHON";
+	gotoxy(90, 6); cout << "ESC : THOAT";
 }
 void khung_nhap_diem(int x, int y, int w, int h) {
 	SetColor(3);
@@ -1284,13 +1287,14 @@ void kiem_tra_ds_SV(dsLop& dslop) {
 		gotoxy(30, 19); cout << "MA LOP CHUAN : (KY TU + 2 SO + 3 KY TU + N + 2 SO) E22CQCN01";
 		gotoxy(49, 12); check = nhap_ma_lop(malop);
 		if (check == 1) break;
+		// press tab
 		if (check == -1) {
 			system("cls");
 			int i = menu_ds_Lop(dslop, 1);
 			if (i == -1) return;
 			malop = dslop.ds_lop[i].MALOP;
 			system("cls");
-		}
+		} 
 		else if (check == 0) return;
 	}
 	for (int i = 0; i < dslop.soluong; ++i) {
@@ -1674,17 +1678,27 @@ int them_MH(MonHoc*& dsMH, string maMH, int y, bool check = 0, string tenMH = ""
 		gotoxy(x, y += 2);
 		cout << "Nhap ten mon hoc: ";
 		if (nhap_ten_MH(tenMH) == "") return 0;
-		gotoxy(x, y += 2);
-		cout << "Nhap so tin chi ly thuyet: ";
-		tmp1 = nhap_diem(STCLT);
-		if (tmp1 == -1) return 0;
-		else if (tmp1 != -2) STCLT = tmp1;
-		gotoxy(x, y += 2);
-		cout << "Nhap so tin chi thuc hanh: ";
-		tmp2 = nhap_diem(STCTH);
-		if (tmp2 == -1) return 0;
-		else if (tmp2 != -2) STCTH = tmp2;
-		check = 1;
+		while (1) {
+			SetColor(7);
+			gotoxy(x, y + 2);
+			cout << "Nhap so tin chi ly thuyet: ";
+			tmp1 = nhap_diem(STCLT);
+			if (tmp1 == -1) return 0;
+			else if (tmp1 != -2) STCLT = tmp1;
+			gotoxy(x, y + 4);
+			cout << "Nhap so tin chi thuc hanh: ";
+			tmp2 = nhap_diem(STCTH);
+			if (tmp2 == -1) return 0;
+			else if (tmp2 != -2) STCTH = tmp2;
+			if (STCLT + STCTH == 0) {
+				khung_bao_loi("Thong tin ban vua nhap khong hop le", 78, 20, 38, 4);
+				continue;
+			}
+			else {
+				check = 1;
+				break;
+			}
+		}
 	}
 	if (dsMH == NULL) {
 		dsMH = new MonHoc();
@@ -1766,16 +1780,25 @@ void hieu_chinh_MH(MonHoc*& dsMH, string maMH) {
 		cout << "Nhap ten mon hoc: ";
 		string str = nhap_ten_MH(tenMH);
 		if (str == "" || (str == "" && tenMH == MH->TenMH)) return;
-		gotoxy(x, y += 2);
-		cout << "Nhap so tin chi ly thuyet: ";
-		STCLT = nhap_diem(STCLT);
-		if (STCLT == -1) return;
-		else if (STCLT == -2) STCLT = MH->STCLT;
-		gotoxy(x, y += 2);
-		cout << "Nhap so tin chi thuc hanh: ";
-		STCTH = nhap_diem(STCTH);
-		if (STCTH == -1) return;
-		else if (STCTH == -2) STCTH = MH->STCTH;
+		while (1) {
+			SetColor(7);
+			gotoxy(x, y + 2);
+			cout << "Nhap so tin chi ly thuyet: ";
+			STCLT = nhap_diem(STCLT);
+			if (STCLT == -1) return;
+			else if (STCLT == -2) STCLT = MH->STCLT;
+			gotoxy(x, y + 4);
+			cout << "Nhap so tin chi thuc hanh: ";
+			STCTH = nhap_diem(STCTH);
+			if (STCTH == -1) return;
+			else if (STCTH == -2) STCTH = MH->STCTH;
+			if (STCLT + STCTH == 0) {
+				khung_bao_loi("Thong tin ban vua nhap khong hop le", 78, 20, 38, 4);
+				continue;
+			}
+			else break;
+		}
+
 		MH->TenMH = tenMH;
 		MH->STCLT = STCLT;
 		MH->STCTH = STCTH;
@@ -2318,6 +2341,8 @@ int them_lop_TC(dsLopTc& DSLTC, dsMonHoc& dsMH) {
 		}
 		if (p->MaMH == "") return 0;
 		else {
+			system("cls");
+			khung_LTC(4, 10, 120, 2, 8, 4);
 			SetColor(7);
 			gotoxy(x, y); cout << p->MaMH;
 			break;
@@ -2328,25 +2353,27 @@ int them_lop_TC(dsLopTc& DSLTC, dsMonHoc& dsMH) {
 		SetColor(7);
 		gotoxy(x = 35, y);
 		nhap_nien_khoa(p->nien_khoa);
+		if (p->nien_khoa == "") return 0;
 		if (stoi(p->nien_khoa) < 2000 || stoi(p->nien_khoa) > 2024) {
 			khung_bao_loi("Nien khoa ban vua nhap khong hop le", 40, 18, 38, 4);
 			continue;
 		}
-		if (p->nien_khoa == "") return 0;
 		break;
 	}
+
 	while (1) {
 		SetColor(7);
 		gotoxy(x = 50, y);
 		p->HK = nhap_diem(p->HK);
+		if (p->HK == -1) return 0;
+		else if (p->HK == -2) p->HK = 1;
 		if (p->HK > 4) {
 			khung_bao_loi("Hoc ki ban vua nhap khong hop le", 40, 18, 38, 4);
 			continue;
 		}
-		if (p->HK == -1) return 0;
-		else if (p->HK == -2) p->HK = 1;
 		break;
 	}
+
 	gotoxy(x += 15, y);
 	p->Nhom = nhap_diem(p->Nhom);
 	if (p->Nhom == -1) return 0;
@@ -2402,41 +2429,66 @@ int hieu_chinh_lop_TC(dsLopTc& DSLTC, LopTC* lop, dsMonHoc& dsMH) {
 	SetColor(15);
 	for (int i = 0; i < DSLTC.damo; ++i) {
 		if (lop->MaLopTc == DSLTC.ds[i]->MaLopTc) {
-			maMH = DSLTC.ds[i]->MaMH;
-			nien_khoa = DSLTC.ds[i]->nien_khoa;
-			hk = DSLTC.ds[i]->HK;
-			nhom = DSLTC.ds[i]->Nhom;
-			max = DSLTC.ds[i]->max;
-			min = DSLTC.ds[i]->min;
+			while (1) {
+				SetColor(7);
+				maMH = DSLTC.ds[i]->MaMH;
+				nien_khoa = DSLTC.ds[i]->nien_khoa;
+				hk = DSLTC.ds[i]->HK;
+				nhom = DSLTC.ds[i]->Nhom;
+				max = DSLTC.ds[i]->max;
+				min = DSLTC.ds[i]->min;
 
-			gotoxy(x, y); cout << DSLTC.ds[i]->MaMH;
-			gotoxy(x += 15, y); cout << DSLTC.ds[i]->nien_khoa;
-			gotoxy(x += 15, y); cout << DSLTC.ds[i]->HK;
-			gotoxy(x += 15, y); cout << DSLTC.ds[i]->Nhom;
-			gotoxy(x += 15, y); cout << DSLTC.ds[i]->max;
-			gotoxy(x += 15, y); cout << DSLTC.ds[i]->min;
-			x = 20;
-			gotoxy(x, y);
-			if (nhap_ma_mon(maMH, dsMH.ds, 0) == -1) {
-				system("cls");
-				menu_ds_MH(dsMH, 1, 1, DSLTC.ds[i]->MaMH);
-				system("cls");
-				khung_LTC(4, 10, 120, 2, 8, 4);
+				gotoxy(x, y); cout << DSLTC.ds[i]->MaMH;
+				gotoxy(x += 15, y); cout << DSLTC.ds[i]->nien_khoa;
+				gotoxy(x += 15, y); cout << DSLTC.ds[i]->HK;
+				gotoxy(x += 15, y); cout << DSLTC.ds[i]->Nhom;
+				gotoxy(x += 15, y); cout << DSLTC.ds[i]->max;
+				gotoxy(x += 15, y); cout << DSLTC.ds[i]->min;
+				x = 20;
 				gotoxy(x, y);
-				cout << DSLTC.ds[i]->MaMH;
+				if (nhap_ma_mon(maMH, dsMH.ds, 0) == -1) {
+					system("cls");
+					menu_ds_MH(dsMH, 1, 1, DSLTC.ds[i]->MaMH);
+					system("cls");
+					khung_LTC(4, 10, 120, 2, 8, 4);
+					gotoxy(x, y);
+					cout << DSLTC.ds[i]->MaMH;
+				}
+				else if (maMH == "") return 0;
+				else if (tim_MH(dsMH.ds, maMH) == NULL) {
+					khung_bao_loi("Ma mon hoc ban vua nhap khong ton tai", 40, 18, 48, 4);
+					continue;
+				}
+				else {
+					DSLTC.ds[i]->MaMH = maMH;
+					break;
+				}
 			}
-			else if (maMH == "") return 0;
-			else DSLTC.ds[i]->MaMH = maMH;
 
-			gotoxy(x += 15, y);
-			nhap_nien_khoa(nien_khoa);
-			if (nien_khoa == "") return 0;
-			else DSLTC.ds[i]->nien_khoa = nien_khoa;
+			while (1) {
+				SetColor(7);
+				gotoxy(x = 35, y);
+				nhap_nien_khoa(nien_khoa);
+				if (nien_khoa == "") return 0;
+				if (stoi(nien_khoa) < 2000 || stoi(nien_khoa) > 2024) {
+					khung_bao_loi("Nien khoa ban vua nhap khong hop le", 40, 18, 38, 4);
+					continue;
+				}
+				break;
+			}
 
-			gotoxy(x += 15, y);
-			hk = nhap_diem(DSLTC.ds[i]->HK);
-			if (hk == -1) return 0;
-			else if (hk != -2) DSLTC.ds[i]->HK = hk;
+			while (1) {
+				SetColor(7);
+				gotoxy(x = 50, y);
+				hk = nhap_diem(hk);
+				if (hk == -1) return 0;
+				else if (hk == -2) hk = 1;
+				if (hk > 4) {
+					khung_bao_loi("Hoc ki ban vua nhap khong hop le", 40, 18, 38, 4);
+					continue;
+				}
+				break;
+			}
 
 			gotoxy(x += 15, y);
 			nhom = nhap_diem(DSLTC.ds[i]->Nhom);
@@ -2456,7 +2508,7 @@ int hieu_chinh_lop_TC(dsLopTc& DSLTC, LopTC* lop, dsMonHoc& dsMH) {
 				else if (DSLTC.ds[i]->min == -2) DSLTC.ds[i]->min = min;
 
 
-				if (DSLTC.ds[i]->min < DSLTC.ds[i]->max) {
+				if (DSLTC.ds[i]->min < DSLTC.ds[i]->max && DSLTC.ds[i]->min > 0) {
 					DSLTC.ds[i]->hightlight = 1;
 					break;
 				}
@@ -2565,7 +2617,7 @@ void cap_nhat_lop_TC(dsLopTc& dsLTC, dsMonHoc& dsMH) {
 		if (c == ESC) {
 			if (!checkSave) {
 				if (khung_xac_nhan("Danh sach chua duoc luu ban co muon luu khong!", 30, 18) == 1) {
-					writefile_dsMH("C:/Users/84773/OneDrive/Máy tính/dsMonHoc.txt", dsMH);
+					writefile_dsLTC("C:/Users/84773/OneDrive/Máy tính/dsLTC.txt", dsLTC);
 					khung_bao_loi("da luu thanh cong", 42, 24, 20, 4);
 				}
 				return;;
@@ -2576,9 +2628,6 @@ void cap_nhat_lop_TC(dsLopTc& dsLTC, dsMonHoc& dsMH) {
 		case F1: {
 			system("cls");
 			khung_LTC(4, 10, 120, 2, 8, 4);
-			gotoxy(30, 16); cout << "ENTER : CHON";
-			gotoxy(50, 16); cout << "TAB : XEM DS MH";
-			gotoxy(70, 16); cout << "ESC : THOAT";
 			if (them_lop_TC(dsLTC, dsMH)) checkSave = 0;
 			system("Cls");
 			khung_LTC(0, 0, 120, 2, 8, 16, 1);
@@ -2642,7 +2691,6 @@ void cap_nhat_lop_TC(dsLopTc& dsLTC, dsMonHoc& dsMH) {
 				checkSave = 0;
 				xoa_lop_TC(dsLTC, loptc);
 				khung_bao_loi("Da xoa thanh cong 1 lop TC", 40, 24, 30, 4);
-				Sleep(1500);
 				//}
 			}
 			system("cls");
@@ -2749,7 +2797,7 @@ void in_ds_SV_DK(dsLopTc& dsLTC, dsLop& dslop, dsMonHoc& dsMH) {
 		int jy = 3;
 		bool check = 0;
 		DangKy* dk = loptc->pdssvdk.phead;
-		while (dk != NULL && !dk->huy) {
+		while (dk != NULL) {
 			for (int i = 0; i < dslop.soluong; ++i) {
 				Sinhvien* sv = dslop.ds_lop[i].pdsSV.phead;
 				while (sv != NULL) {
@@ -2940,7 +2988,7 @@ int them_SV_DK(dsLopTc& dsltc, LopTC* LTC, dsLop& dslop, string maSV) {
 		if (dsltc.ds[i]->MaMH == LTC->MaMH && dsltc.ds[i]->nien_khoa == LTC->nien_khoa) {
 			DangKy* SVcheck = dsltc.ds[i]->pdssvdk.phead;
 			while (SVcheck != NULL) {
-				if (SVcheck->MSV == maSV) {
+				if (SVcheck->MSV == maSV && SVcheck->huy == 0) {
 					khung_bao_loi("BAN DA DK LTC NAY", 95, 14, 30, 4);
 					return 0;
 				}
@@ -3037,32 +3085,31 @@ void DK_LOP_TC(dsLopTc& dsltc, dsLop& dslop, dsMonHoc& dsMH) {
 	gotoxy(25, 2); cout << "TEN: " << tmp->ten;
 	gotoxy(40, 1); cout << "SDT: " << tmp->SDT;
 	gotoxy(65, 2); cout << "GIOI TINH: " << tmp->phai;
-	gotoxy(90, 1); cout << "NIEN KHOA: ";
 	while (1) {
 		SetColor(7);
+		gotoxy(90, 1); cout << "NIEN KHOA: ";
 		nhap_nien_khoa(nien_khoa);
+		if (nien_khoa == "") return;
 		if (stoi(nien_khoa) < 2000 || stoi(nien_khoa) > 2024) {
 			khung_bao_loi("Nien khoa ban vua nhap khong hop le", 40, 18, 38, 4);
 			continue;
 		}
-		if (nien_khoa == "") return;
 		break;
 	}
-	gotoxy(115, 2); cout << "HOC KI: ";
-	int x = wherex(), y = wherey();
 	while (1) {
 		SetColor(7);
-		gotoxy(x, y);
+		gotoxy(115, 2); cout << "HOC KI: ";
+		if (hk == -1) return;
+		else if (hk == -2) hk = 1;
 		hk = nhap_diem(hk);
 		if (hk > 4) {
 			khung_bao_loi("Hoc ki ban vua nhap khong hop le", 40, 18, 38, 4);
 			continue;
 		}
-		if (hk == -1) return;
-		else if (hk == -2) hk = 1;
 		break;
 	}
 	while (1) {
+		system("cls");
 		gotoxy(1, 1); cout << "HO: " << tmp->ho;
 		gotoxy(25, 2); cout << "TEN: " << tmp->ten;
 		gotoxy(40, 1); cout << "SDT: " << tmp->SDT;
@@ -3140,10 +3187,10 @@ void in_thong_tin_nhap_diem(dsLop& dslop, DangKy* svdk, int y, int count = 0) {
 	}
 }
 int menu_nhap_diem(LopTC*& lopTC, dsLop& dslop) {
-	int choice = 0;
+	int choice = 1;
 	int option = lopTC->pdssvdk.sl;
 	while (1) {
-		int count = 0;
+		int count = 1;
 		int iy = 3;
 		DangKy* dk = lopTC->pdssvdk.phead;
 		while (dk != NULL) {
@@ -3159,7 +3206,7 @@ int menu_nhap_diem(LopTC*& lopTC, dsLop& dslop) {
 		if (key == Enter) {
 			int j = 3;
 			DangKy* tmp = lopTC->pdssvdk.phead;
-			for (int i = 0; i < choice; ++i) {
+			for (int i = 1; i < choice; ++i) {
 				tmp = tmp->pnext;
 				j += 2;
 			}
@@ -3174,12 +3221,12 @@ int menu_nhap_diem(LopTC*& lopTC, dsLop& dslop) {
 		switch (key) {
 		case UP: {
 			--choice;
-			if (choice < 0) choice = option - 1;
+			if (choice < 1) choice = option;
 			break;
 		}
 		case DOWN: {
 			++choice;
-			if (choice > option - 1) choice = 0;
+			if (choice > option) choice = 1;
 			break;
 		}
 		}
