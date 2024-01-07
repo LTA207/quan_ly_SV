@@ -3195,10 +3195,12 @@ int menu_nhap_diem(LopTC*& lopTC, dsLop& dslop) {
 		DangKy* dk = lopTC->pdssvdk.phead;
 		while (dk != NULL) {
 			if (choice == count) SetColor(17);
-			else SetColor(7);
-			in_thong_tin_nhap_diem(dslop, dk, iy, count);
-			++count;
-			iy += 2;
+			else SetColor(7); 
+			if (dk->huy == 0) {
+				in_thong_tin_nhap_diem(dslop, dk, iy, count);
+				++count;
+				iy += 2;
+			}
 			dk = dk->pnext;
 		}
 		char key = _getch();

@@ -22,7 +22,7 @@ struct Sinhvien {
 	string ten;
 	string phai;
 	string SDT;
-	int daDK = 0;
+	//int daDK = 0;
 	bool highlight = 0;
 	//pointer
 	Sinhvien* pnext = NULL;
@@ -51,7 +51,6 @@ struct MonHoc {
 	bool dadk = 0;
 	int freq = 0; 
 	bool hightlight = 0;
-	bool can_delete = 1;
 	//pointer
 	MonHoc* pleft = NULL;
 	MonHoc* pright = NULL;
@@ -96,8 +95,8 @@ void readfile_dsLop(string str, dsLop& dslop) {
 			getline(fileinput, sv->ten);
 			getline(fileinput, sv->phai);
 			getline(fileinput, sv->SDT);
-			fileinput >> sv->daDK;
-			fileinput.ignore();
+			/*fileinput >> sv->daDK;
+			fileinput.ignore();*/
 			sv->pnext = NULL;
 			if (dslop.ds_lop[dslop.soluong].pdsSV.phead == NULL) {
 				dslop.ds_lop[dslop.soluong].pdsSV.phead = sv;
@@ -131,7 +130,7 @@ void writefile_dsLop(string str, dsLop& dslop) {
 				fileoutput << sv->ten << endl;
 				fileoutput << sv->phai << endl;
 				fileoutput << sv->SDT << endl;
-				fileoutput << sv->daDK << endl;
+				//fileoutput << sv->daDK << endl;
 				sv = sv->pnext;
 			}
 			fileoutput << "###########" << endl;
@@ -152,7 +151,6 @@ void readfile_dsLTC(string str, dsLopTc& dsLTC) {
 			delete LTC;
 			break;
 		}
-		++MA;
 		fileinput.ignore();
 		getline(fileinput, LTC->MaMH);
 		getline(fileinput, LTC->nien_khoa);
@@ -194,7 +192,7 @@ void readfile_dsLTC(string str, dsLopTc& dsLTC) {
 		dsLTC.ds[dsLTC.damo] = LTC;
 		++dsLTC.damo;
 	}
-
+	MA = dsLTC.ds[dsLTC.damo - 1]->MaLopTc;
 	fileinput.close();
 }
 void writefile_dsLTC(string str, dsLopTc& dsLTC) {
